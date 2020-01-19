@@ -21,7 +21,8 @@ namespace BAOZ.Api.Modules
             #region DbContext Registrations
             builder.Register(componentContext =>
             {
-                bool isDevelopment = componentContext.Resolve<IHostingEnvironment>().IsDevelopment();
+                var env = componentContext.Resolve<IWebHostEnvironment>();
+                 bool isDevelopment = env.EnvironmentName == "Development";
                 var configuration = componentContext.Resolve<IConfiguration>();
 
                 var optionsBuilder = new DbContextOptionsBuilder<UserSqlDbContext>()
@@ -34,7 +35,6 @@ namespace BAOZ.Api.Modules
                     });
 
                 optionsBuilder.EnableSensitiveDataLogging(!isDevelopment);
-
                 optionsBuilder.EnableDetailedErrors(isDevelopment);
 
                 var context = new UserSqlDbContext(optionsBuilder.Options);

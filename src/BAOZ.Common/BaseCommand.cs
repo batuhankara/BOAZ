@@ -20,7 +20,7 @@ namespace BAOZ.Common
 
 
         [JsonIgnore]
-        public TIdentity AggregateId { get => base.AggregateId; }
+        public new TIdentity AggregateId { get => base.AggregateId; }
 
         private static Type GetFirstNonAbstractTypeInInheritenceHierarchy(Type aDerivedType)
         {

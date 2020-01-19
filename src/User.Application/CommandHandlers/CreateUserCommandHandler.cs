@@ -11,13 +11,15 @@ using BAOZ.Common;
 
 namespace User.Application.CommandHandlers
 {
-    public class CreateUserCommandHandler : CommandHandler<UserAggregate, BaozId, CommandResult, CreateUserCommand>
+    public class UserCommandHandler :
+        ICommandHandler<UserAggregate, BaozId, CommandResult, CreateUserCommand>,
+        ICommandHandler<UserAggregate, BaozId, CommandResult, UpdateUserCommand>
     {
-        public CreateUserCommandHandler()
+        public UserCommandHandler()
         {
 
         }
-        public override async Task<CommandResult> ExecuteCommandAsync(
+        public async Task<CommandResult> ExecuteCommandAsync(
            UserAggregate aggregate,
            CreateUserCommand command,
            CancellationToken cancellationToken)
@@ -25,6 +27,13 @@ namespace User.Application.CommandHandlers
             IExecutionResult createResult = aggregate.Create(command);
 
             return await Task.FromResult(new CommandResult(createResult.IsSuccess, aggregate));
+        }
+
+        public async Task<CommandResult> ExecuteCommandAsync(UserAggregate aggregate, UpdateUserCommand command, CancellationToken cancellationToken)
+        {
+            IExecutionResult createResult = aggregate.Create(command);
+            return await Task.FromResult(new CommandResult(createResult.IsSuccess, aggregate));
+
         }
     }
 }
