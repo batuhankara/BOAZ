@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Autofac.Integration.Mvc;
 using Baoz.Infrastructure.EventStore;
 using BAOZ.Api.Configurations;
 using BAOZ.Api.Modules;
@@ -49,7 +46,7 @@ namespace BAOZ.Api
 
             var container = containerBuilder.Build();
 
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
+            //DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             return new AutofacServiceProvider(container);
         }

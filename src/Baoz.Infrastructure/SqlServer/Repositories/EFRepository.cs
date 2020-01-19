@@ -18,9 +18,10 @@ namespace Baoz.Infrastructure.SqlServer.Repositories
             CurrentContext = dbContext;
             DbSet = dbContext.Set<TEntity>();
         }
-        public TEntity Add(TEntity entity)
+        public Task Add(TEntity entity)
         {
-            return DbSet.Add(entity).Entity;
+            DbSet.Add(entity);
+            return Task.FromResult(0);
         }
         public async Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filterBy)
         {

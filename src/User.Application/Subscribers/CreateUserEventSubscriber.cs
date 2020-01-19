@@ -16,12 +16,14 @@ using User.Core.Domain.Repositories;
 namespace User.Application.Subscribers
 {
 
-    class CreateUserEventSubscriber : ISubscribeSynchronousTo<UserAggregate, BaozId, UserCreatedEvent>
+    class UserEventSubscriber :
+        ISubscribeSynchronousTo<UserAggregate, BaozId, UserCreatedEvent>,
+        ISubscribeSynchronousTo<UserAggregate, BaozId, UserUpdatedEvent>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork<IUserSqlDbContext> _unitOfWork;
 
-        public CreateUserEventSubscriber(IUserRepository userRepository, IUnitOfWork<IUserSqlDbContext> unitOfWork)
+        public UserEventSubscriber(IUserRepository userRepository, IUnitOfWork<IUserSqlDbContext> unitOfWork)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
@@ -36,6 +38,15 @@ namespace User.Application.Subscribers
             };
             _userRepository.Add(user);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task HandleAsync(IDomainEvent<UserAggregate, BaozId, UserUpdatedEvent> domainEvent, CancellationToken cancellationToken)
+        {
+            var entity = await _userRepository.GetAsync(x => x.Id == domainEvent.AggregateEvent.Id);
+            entity.FirstName = domainEvent.AggregateEvent.FirstName;
+
+            _unitOfWork.ChangeAutoDetectChangesStatus(true);
+            var res = await _unitOfWork.CommitAsync();
         }
     }
 }

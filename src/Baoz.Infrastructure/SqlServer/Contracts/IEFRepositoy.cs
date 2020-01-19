@@ -9,7 +9,7 @@ namespace Baoz.Infrastructure.SqlServer.Contracts
 {
     public interface IEFRepository<TEntity> where TEntity : class
     {
-        TEntity Add(TEntity entity);
+        Task Add(TEntity entity);
         Task<TEntity> GetAsync(Expression<Func<TEntity, bool>> filterBy);
         Task<List<TEntity>> GetManyAsNoTrackingAsync(Expression<Func<TEntity, bool>> filterBy = null);
 

@@ -2,7 +2,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore;
 
 namespace Baoz.Infrastructure.SqlServer.Extensions
 {
@@ -35,16 +34,12 @@ namespace Baoz.Infrastructure.SqlServer.Extensions
             {
                 foreach (var property in entity.GetProperties())
                 {
-                    ModifyProperty(property);
                 }
             }
             return modelBuilder;
         }
 
-        private static void ModifyProperty(Microsoft.EntityFrameworkCore.Metadata.IMutableProperty property)
-        {
-           
-        }
+      
     }
 
 }

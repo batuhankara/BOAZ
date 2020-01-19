@@ -29,10 +29,26 @@ namespace User.Core.Domain.Aggregates
 
             return ExecutionResult.Success();
         }
+        public IExecutionResult Create(UpdateUserCommand command)
+        {
+
+            var @event = new UserUpdatedEvent(
+               command.Id,
+               command.FirstName
+                );
+
+            Emit(@event);
+
+            return ExecutionResult.Success();
+        }
 
         #endregion
         #region Apply methods
         public void Apply(UserCreatedEvent domainEvent)
+        {
+            this.FirstName = domainEvent.FirstName;
+        }
+        public void Apply(UserUpdatedEvent domainEvent)
         {
             this.FirstName = domainEvent.FirstName;
         }
