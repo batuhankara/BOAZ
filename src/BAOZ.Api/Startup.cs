@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using User.Core.Domain.Commands;
+using User.Infrastructure;
 
 namespace BAOZ.Api
 {
@@ -59,6 +60,10 @@ namespace BAOZ.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using (var scope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                scope.ServiceProvider.GetService<UserSqlDbContext>().Database.EnsureCreated();
+            }
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

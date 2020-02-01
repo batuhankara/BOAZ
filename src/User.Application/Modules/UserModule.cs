@@ -27,12 +27,9 @@ namespace User.Application.Modules
                 var configuration = componentContext.Resolve<IConfiguration>();
 
                 var optionsBuilder = new DbContextOptionsBuilder<UserSqlDbContext>()
-                    .UseSqlServer(configuration.GetReadStoreConnectionString(), option =>
+                    .UseNpgsql(configuration.GetReadStoreConnectionString(), option =>
                     {
                         option.MigrationsHistoryTable("EFMigrationsHistory");
-                        option.EnableRetryOnFailure(maxRetryCount: 5,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null);
                     });
 
                 optionsBuilder.EnableSensitiveDataLogging(!isDevelopment);

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace User.Infrastructure.Migrations
 {
@@ -13,11 +14,17 @@ namespace User.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     DbId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     CreatedAtUTC = table.Column<DateTime>(nullable: false),
                     UpdatedAtUTC = table.Column<DateTime>(nullable: true),
                     RowVersion = table.Column<byte[]>(maxLength: 8, rowVersion: true, nullable: false),
-                    FirstName = table.Column<string>(nullable: true)
+                    FirstName = table.Column<string>(nullable: true),
+                    LastName = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    CountryCode = table.Column<string>(nullable: true),
+                    FullPhoneNumber = table.Column<string>(nullable: true),
+                    PasswordHash = table.Column<byte[]>(nullable: true),
+                    PasswordSalt = table.Column<byte[]>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -25,11 +32,10 @@ namespace User.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Users_FirstName",
+                name: "IX_Users_FullPhoneNumber",
                 table: "Users",
-                column: "FirstName",
-                unique: true,
-                filter: "[FirstName] IS NOT NULL");
+                column: "FullPhoneNumber",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

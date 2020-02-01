@@ -1,4 +1,5 @@
 ﻿using BAOZ.Common;
+using BAOZ.Common.ValidationHelpers;
 using FluentValidation;
 using FluentValidation.Attributes;
 using System;
@@ -33,7 +34,10 @@ namespace User.Core.Domain.Commands
         {
 
             RuleFor(user => user.FirstName).NotNull().NotEmpty();
-            RuleFor(user => user.PhoneNumber).MaximumLength(4);
+            RuleFor(user => user.LastName).NotNull().NotEmpty();
+            RuleFor(user => user.PhoneNumber).Must(PhoneNumberValidation.IsNumeric).Length(10).WithMessage("Invalid Phone Number");
+            RuleFor(user => user.CountryCode).Must(PhoneNumberValidation.IsNumeric).Length(2);
+
         }
     }
 }
