@@ -15,8 +15,7 @@ using User.Core.Domain.Repositories;
 
 namespace User.Application.Subscribers
 {
-
-    class UserEventSubscriber :
+    public class UserEventSubscriber :
         ISubscribeSynchronousTo<UserAggregate, BaozId, UserCreatedEvent>,
         ISubscribeSynchronousTo<UserAggregate, BaozId, UserUpdatedEvent>
     {
@@ -43,7 +42,7 @@ namespace User.Application.Subscribers
                 CountryCode = @event.CountryCode,
                 FullPhoneNumber = @event.FullPhoneNumber
             };
-             _userRepository.Add(user);
+            _userRepository.Add(user);
             await _unitOfWork.CommitAsync();
         }
 

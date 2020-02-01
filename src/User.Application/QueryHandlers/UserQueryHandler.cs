@@ -6,15 +6,14 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using User.Application.Dtos;
+using User.Application.Modules;
 using User.Application.Queries;
 using User.Core.Domain.Entities;
 using User.Core.Domain.Repositories;
 
 namespace User.Application.QueryHandlers
 {
-    public class UserQueryHandler :
-        IQueryHandler<GetUserByIdQuery, UserDto>,
-        IQueryHandler<UserLoginQuery, AuthTokenDto>
+    public class UserQueryHandler : IUserQueryHandler
     {
         private readonly IUserRepository _userRepository;
         private readonly IPasswordService _passwordService;
