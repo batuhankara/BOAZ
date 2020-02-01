@@ -8,6 +8,8 @@ using EventFlow.Autofac.Extensions;
 using EventFlow.Extensions;
 using EventFlow.MetadataProviders;
 using EventFlow.MongoDB.Extensions;
+using EventFlow.RabbitMQ;
+using EventFlow.RabbitMQ.Extensions;
 using EventFlow.Snapshots.Strategies;
 using EventStore.ClientAPI;
 using EventStore.ClientAPI.SystemData;
@@ -27,11 +29,11 @@ namespace BAOZ.Api.Configurations
             var snapshotStoreSettings = configuration.GetSnapshotStoreSettings();
             var rabbitMQSettings = configuration.GetRabbitMQSettings();
             var eventStoreSettings = configuration.GetEventStoreSettings();
-           
-            //var rabbitMQConfiguration = RabbitMqConfiguration.With(new Uri($"amqp://{rabbitMQSettings.UserName}:{rabbitMQSettings.Password}@{rabbitMQSettings.Host}:{rabbitMQSettings.Port}"), rabbitMQSettings.Persistent.Value, 4, rabbitMQSettings.ExchangeName);
+
+            var rabbitMQConfiguration = RabbitMqConfiguration.With(new Uri($"amqp://{rabbitMQSettings.UserName}:{rabbitMQSettings.Password}@{rabbitMQSettings.Host}:{rabbitMQSettings.Port}"), rabbitMQSettings.Persistent.Value, 5, rabbitMQSettings.ExchangeName);
 
             EventFlowOptions.New
-              
+
                             .UseAutofacContainerBuilder(containerBuilder) // Must be the first line!
                             .Configure(c => c.ThrowSubscriberExceptions = true)
                             .RegisterModule<UserModule>()
@@ -43,14 +45,13 @@ namespace BAOZ.Api.Configurations
                             .ConfigureEventStore(eventStoreSettings)
                             .ConfigureMongoDb(new MongoClient(snapshotStoreSettings.ConnectionString), snapshotStoreSettings.Name)
                             .UseMongoDbSnapshotStore()
-                             
-                            .RegisterServices(sr => sr.Register(i => SnapshotEveryFewVersionsStrategy.Default));
-            //.PublishToRabbitMq(rabbitMQConfiguration);
+                            .RegisterServices(sr => sr.Register(i => SnapshotEveryFewVersionsStrategy.Default))
+                            .PublishToRabbitMq(rabbitMQConfiguration);
         }
 
         public static IApplicationBuilder UseEventSourcing(this IApplicationBuilder applicationBuilder)
         {
-            return applicationBuilder.UseMiddleware<CommandPublishMiddleware>();
+            return applicationBuilder;
         }
 
         public static IEventFlowOptions ConfigureEventStore(this IEventFlowOptions options, EventStoreSettings settings)

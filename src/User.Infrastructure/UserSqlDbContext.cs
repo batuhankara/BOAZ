@@ -25,7 +25,7 @@ namespace User.Infrastructure
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseNpgsql("User ID=postgres;Password=example;Server=127.0.0.1; Port=5432;Database=boazdb",
+                optionsBuilder.UseNpgsql("User ID=batu;Password=example;Server=127.0.0.1; Port=5432;Database=boazdb",
 
                     option =>
                     {
