@@ -31,12 +31,19 @@ namespace User.Application.Subscribers
 
         public async Task HandleAsync(IDomainEvent<UserAggregate, BaozId, UserCreatedEvent> domainEvent, CancellationToken cancellationToken)
         {
+            var @event = domainEvent.AggregateEvent;
             var user = new UserView
             {
-                Id = domainEvent.AggregateEvent.UserId,
-                FirstName = domainEvent.AggregateEvent.FirstName
+                Id = @event.UserId,
+                FirstName = @event.FirstName,
+                LastName = @event.LastName,
+                PasswordSalt = @event.PasswordSalt,
+                PasswordHash = @event.PasswordHash,
+                PhoneNumber = @event.PhoneNumber,
+                CountryCode = @event.CountryCode,
+                FullPhoneNumber = @event.FullPhoneNumber
             };
-            _userRepository.Add(user);
+             _userRepository.Add(user);
             await _unitOfWork.CommitAsync();
         }
 

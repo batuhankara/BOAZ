@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using User.Application.Dtos;
 using User.Application.Queries;
 using User.Core.Domain.Commands;
 using User.Core.Domain.Repositories;
@@ -24,6 +25,9 @@ namespace BAOZ.Api.Controllers.User
         [Route("register")]
         public async Task<IActionResult> Post([FromBody] CreateUserCommand command)
         {
+            //var res = command.Validate();
+
+         
             var result = await CommandBus.PublishAsync(command, CancellationToken.None).ConfigureAwait(false);
             if (result.IsSuccess)
             {
@@ -47,6 +51,13 @@ namespace BAOZ.Api.Controllers.User
         public async Task<IActionResult> Get(Guid id)
         {
             var query = new GetUserByIdQuery(id);
+            var result = await QueryProcessor.ProcessAsync(query, CancellationToken.None);
+            return Ok(result);
+        }
+        [Route("Login")]
+        [HttpPost]
+        public async Task<IActionResult> Login([FromBody] UserLoginQuery query)
+        {
             var result = await QueryProcessor.ProcessAsync(query, CancellationToken.None);
             return Ok(result);
         }

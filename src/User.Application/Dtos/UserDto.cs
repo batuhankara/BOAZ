@@ -16,4 +16,17 @@ namespace User.Application.Dtos
         public Guid Id { get; set; }
         public string Name { get; set; }
     }
+
+    public class AuthTokenDto
+    {
+        public AuthTokenDto(string token, string tokenType)
+        {
+            Token = token;
+            TokenType = tokenType;
+        }
+
+        public string Token { get; set; }
+        public string TokenType { get; set; }
+    }
+
 }
