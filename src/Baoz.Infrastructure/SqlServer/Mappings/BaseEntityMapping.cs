@@ -2,8 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Baoz.Infrastructure.SqlServer.Mappings
 {
@@ -26,17 +24,10 @@ namespace Baoz.Infrastructure.SqlServer.Mappings
                 builder.Ignore(x => x.DbId);
             }
 
-            UseRowVersion(builder);
+         
         }
 
-        protected virtual void UseRowVersion(EntityTypeBuilder<TEntity> builder)
-        {
-            // Concurrency
-            builder.Property(b => b.RowVersion)
-                .IsRequired()
-                .HasMaxLength(8)
-                .IsRowVersion();
-        }
+    
     }
 
 }
