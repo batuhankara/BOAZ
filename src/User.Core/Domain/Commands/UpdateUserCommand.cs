@@ -17,14 +17,6 @@ namespace User.Core.Domain.Commands
         }
         public Guid Id { get; set; }
         public string FirstName { get; set; }
-        public override ValidationResult Validate()
-        {
-            var validator = new UpdateUserCommandValidator();
-
-            var result = validator.Validate(this);
-
-            return new ValidationResult(result.Errors.Select(e => new ValidationFailure(e.PropertyName, e.ErrorMessage, e.ErrorMessage, e.AttemptedValue)));
-        }
     }
     public class UpdateUserCommandValidator : AbstractValidator<UpdateUserCommand>
     {

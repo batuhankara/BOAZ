@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using User.Infrastructure;
 
 namespace User.Infrastructure.Migrations
 {
     [DbContext(typeof(UserSqlDbContext))]
-    partial class UserSqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200123200050_password")]
+    partial class password
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,9 +39,6 @@ namespace User.Infrastructure.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FullPhoneNumber")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("LastName")
@@ -66,9 +65,9 @@ namespace User.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FullPhoneNumber")
+                    b.HasIndex("FirstName")
                         .IsUnique()
-                        .HasFilter("[FullPhoneNumber] IS NOT NULL");
+                        .HasFilter("[FirstName] IS NOT NULL");
 
                     b.ToTable("Users");
                 });

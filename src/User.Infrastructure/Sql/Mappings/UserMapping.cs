@@ -13,7 +13,7 @@ namespace User.Infrastructure.Sql.Mappings
 
             builder.ToTable("Users");
 
-            builder.HasIndex(b => b.FirstName).IsUnique(true);
+            builder.HasIndex(b => b.FullPhoneNumber).IsUnique(true);
 
         }
     }

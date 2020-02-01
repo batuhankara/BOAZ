@@ -1,20 +1,21 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Baoz.Infrastructure.EventStore;
 using BAOZ.Api.Configurations;
+using BAOZ.Api.Filters;
 using BAOZ.Api.Modules;
+using BAOZ.Api.ValidationModules;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using User.Core.Domain.Commands;
 
 namespace BAOZ.Api
 {
@@ -31,21 +32,25 @@ namespace BAOZ.Api
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ModelStateFilter());
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+               .AddFluentValidation()
                 .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
+            services.AddWebApiValidations();
             var containerBuilder = new ContainerBuilder();
-
             containerBuilder.AddEventSourcing(Configuration);
             containerBuilder.RegisterType<EventStoreStreamNameFactory>().As<IEventStoreStreamNameFactory>().SingleInstance();
             containerBuilder.RegisterModule(new WebIocModule());
             containerBuilder.Populate(services);
 
             var container = containerBuilder.Build();
-
             //DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             return new AutofacServiceProvider(container);

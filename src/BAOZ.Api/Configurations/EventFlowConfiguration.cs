@@ -27,10 +27,11 @@ namespace BAOZ.Api.Configurations
             var snapshotStoreSettings = configuration.GetSnapshotStoreSettings();
             var rabbitMQSettings = configuration.GetRabbitMQSettings();
             var eventStoreSettings = configuration.GetEventStoreSettings();
-
+           
             //var rabbitMQConfiguration = RabbitMqConfiguration.With(new Uri($"amqp://{rabbitMQSettings.UserName}:{rabbitMQSettings.Password}@{rabbitMQSettings.Host}:{rabbitMQSettings.Port}"), rabbitMQSettings.Persistent.Value, 4, rabbitMQSettings.ExchangeName);
 
             EventFlowOptions.New
+              
                             .UseAutofacContainerBuilder(containerBuilder) // Must be the first line!
                             .Configure(c => c.ThrowSubscriberExceptions = true)
                             .RegisterModule<UserModule>()
@@ -42,6 +43,7 @@ namespace BAOZ.Api.Configurations
                             .ConfigureEventStore(eventStoreSettings)
                             .ConfigureMongoDb(new MongoClient(snapshotStoreSettings.ConnectionString), snapshotStoreSettings.Name)
                             .UseMongoDbSnapshotStore()
+                             
                             .RegisterServices(sr => sr.Register(i => SnapshotEveryFewVersionsStrategy.Default));
             //.PublishToRabbitMq(rabbitMQConfiguration);
         }

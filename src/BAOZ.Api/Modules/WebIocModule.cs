@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using User.Application.Modules;
 
 namespace BAOZ.Api.Modules
 {
@@ -6,7 +7,6 @@ namespace BAOZ.Api.Modules
     {
         protected override void Load(ContainerBuilder builder)
         {
-
 
             builder.RegisterModule<UserModule>();
 
