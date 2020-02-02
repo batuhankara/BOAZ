@@ -36,7 +36,7 @@ namespace BAOZ.Api.Middlewares
                 context.Request.Body.Seek(0, SeekOrigin.Begin);
 
 
-                var requestModel = new RequestModel()
+                var requestModel = new RequestLogModel()
                 {
                     Body = requestBody,
                     Url = context.Request.Path,
@@ -57,13 +57,13 @@ namespace BAOZ.Api.Middlewares
 
                     await responseBody.CopyToAsync(originalBodyStream);
 
-                    var responseModel = new ResponseModel()
+                    var responseModel = new ResponseLogModel()
                     {
                         Body = response,
                         Headers = GetHeaders(context.Response.Headers)
                     };
                     stopWatch.Stop();
-                    var requestResponseModel = new RequestResponseModel()
+                    var requestResponseModel = new RequestResponseLogModel()
                     {
                         ResponseTime = stopWatch.ElapsedMilliseconds.ToString(),
                         RequestModel = requestModel,
