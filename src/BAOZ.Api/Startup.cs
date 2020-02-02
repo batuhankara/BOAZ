@@ -3,6 +3,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Baoz.Infrastructure.EventStore;
 using BAOZ.Api.Configurations;
+using BAOZ.Api.Extensions;
 using BAOZ.Api.Filters;
 using BAOZ.Api.Modules;
 using BAOZ.Api.Sentry;
@@ -44,7 +45,7 @@ namespace BAOZ.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<ISentryEventProcessor, EventProcessor>();
+            //services.AddTransient<ISentryEventProcessor, EventProcessor>();
 
             services.AddControllers(options =>
             {
@@ -72,6 +73,7 @@ namespace BAOZ.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.AddWebApiMiddlewares();
 
             this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
 

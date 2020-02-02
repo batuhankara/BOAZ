@@ -33,6 +33,7 @@ namespace BAOZ.Api
                         webBuilder.ConfigureServices(services => services.AddAutofac())
                         .UseSentry(options =>
                         {
+
                             options.BeforeSend = @event =>
                         {
                             // Never report server names
@@ -53,7 +54,11 @@ namespace BAOZ.Api
                         l.AddConfiguration(c.Configuration);
                         l.AddConsole();
                         // Adding Sentry integration to Microsoft.Extensions.Logging
-                        l.AddSentry();
+                        l.AddSentry(o =>
+                        {
+                            o.MinimumEventLevel = LogLevel.Debug;
+                            
+                        });
                     });
             return host;
         }
