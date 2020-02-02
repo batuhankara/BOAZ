@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BAOZ.Api.Models
 {
-    public class RequestModel
+    public class RequestLogModel
     {
         public string Url { get; set; }
         public List<KeyValuePair<string, string>> Headers { get; set; }
