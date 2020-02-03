@@ -24,9 +24,7 @@ namespace Baoz.Infrastructure.SqlServer.Models
         [Column(Order = 3)]
         public DateTime? UpdatedAtUTC { get; set; }
 
-        [JsonIgnore]
-        public byte[] RowVersion { get; set; }
-
+      
         public override bool Equals(object entity)
         {
             return Equals(entity as BaseEntity<TId>);

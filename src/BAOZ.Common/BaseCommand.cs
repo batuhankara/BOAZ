@@ -16,12 +16,8 @@ namespace BAOZ.Common
         {
 
         }
-
-
-
         [JsonIgnore]
-        public TIdentity AggregateId { get => base.AggregateId; }
-
+        public new TIdentity AggregateId { get => base.AggregateId; }
         private static Type GetFirstNonAbstractTypeInInheritenceHierarchy(Type aDerivedType)
         {
             var baseType = aDerivedType.BaseType;
@@ -34,16 +30,6 @@ namespace BAOZ.Common
                 return aDerivedType;
             }
         }
-
-        public virtual ValidationResult Validate()
-        {
-            return new ValidationResult();
-        }
-
-        //public virtual Guid CommandIdentityToken
-        //{
-        //    get => Guid.Parse(base.GetSourceId().Value); 
-        //}
     }
 
 

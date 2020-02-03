@@ -25,15 +25,14 @@ namespace User.Infrastructure
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder
-                    .UseSqlServer("Server=tcp:127.0.0.1,1433;Initial Catalog=BaozDB;Persist Security Info=False;User ID=sa;Password=A4eneXa7@:<_;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=True;Connection Timeout=30;",
+                optionsBuilder.UseNpgsql("User ID=batu;Password=example;Server=127.0.0.1; Port=5432;Database=boazdb",
+
                     option =>
                     {
+
                         option.MigrationsHistoryTable("EFMigrationsHistory");
-                        option.EnableRetryOnFailure(maxRetryCount: 5,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null);
                     });
+
 
                 optionsBuilder.EnableSensitiveDataLogging(false);
 

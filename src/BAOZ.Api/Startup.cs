@@ -1,62 +1,84 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web.Mvc;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Autofac.Integration.Mvc;
 using Baoz.Infrastructure.EventStore;
 using BAOZ.Api.Configurations;
+using BAOZ.Api.Extensions;
+using BAOZ.Api.Filters;
 using BAOZ.Api.Modules;
+using BAOZ.Api.Sentry;
+using BAOZ.Api.ValidationModules;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Sentry.Extensibility;
+using User.Core.Domain.Commands;
+using User.Infrastructure;
 
 namespace BAOZ.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+
+        public IConfigurationRoot Configuration { get; private set; }
+
+        public ILifetimeScope AutofacContainer { get; private set; }
+
+        public Startup(IWebHostEnvironment env)
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder()
+      .SetBasePath(env.ContentRootPath)
+      .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+      .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
+      .AddEnvironmentVariables();
+            this.Configuration = builder.Build();
         }
 
-        public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public IServiceProvider ConfigureServices(IServiceCollection services)
+        public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddTransient<ISentryEventProcessor, EventProcessor>();
 
-            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(new ModelStateFilter());
+                options.Filters.Add(typeof(ExceptionFilter));
+            })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+               .AddFluentValidation()
                 .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
             });
-            var containerBuilder = new ContainerBuilder();
+            services.AddWebApiValidations();
+            services.AddOptions();
+            services.AddLogging();
 
-            containerBuilder.AddEventSourcing(Configuration);
-            containerBuilder.RegisterType<EventStoreStreamNameFactory>().As<IEventStoreStreamNameFactory>().SingleInstance();
-            containerBuilder.RegisterModule(new WebIocModule());
-            containerBuilder.Populate(services);
-
-            var container = containerBuilder.Build();
-
-            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
-
-            return new AutofacServiceProvider(container);
+        }
+        public void ConfigureContainer(ContainerBuilder builder)
+        {
+            builder.AddEventSourcing(Configuration);
+            builder.RegisterType<EventStoreStreamNameFactory>().As<IEventStoreStreamNameFactory>().SingleInstance();
+            builder.RegisterModule(new WebIocModule());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+            app.AddWebApiMiddlewares();
+
+            this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -72,8 +94,7 @@ namespace BAOZ.Api
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
 
-            app.UseHttpsRedirection()
-                .UpdateDatabase();
+            app.UseHttpsRedirection();
 
             app.UseRouting();
 

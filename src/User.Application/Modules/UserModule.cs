@@ -2,6 +2,7 @@
 using Baoz.Infrastructure.Settings;
 using Baoz.Infrastructure.SqlServer.Contracts;
 using Baoz.Infrastructure.SqlServer.Repositories;
+using BAOZ.Common.Helpers;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,7 @@ using User.Infrastructure;
 using User.Infrastructure.Sql;
 using User.Infrastructure.Sql.Repositories;
 
-namespace BAOZ.Api.Modules
+namespace User.Application.Modules
 {
     public class UserModule : Module
     {
@@ -21,20 +22,17 @@ namespace BAOZ.Api.Modules
             #region DbContext Registrations
             builder.Register(componentContext =>
             {
-                bool isDevelopment = componentContext.Resolve<IHostingEnvironment>().IsDevelopment();
+                var env = componentContext.Resolve<IWebHostEnvironment>();
+                bool isDevelopment = env.EnvironmentName == "Development";
                 var configuration = componentContext.Resolve<IConfiguration>();
 
                 var optionsBuilder = new DbContextOptionsBuilder<UserSqlDbContext>()
-                    .UseSqlServer(configuration.GetReadStoreConnectionString(), option =>
+                    .UseNpgsql(configuration.GetReadStoreConnectionString(), option =>
                     {
                         option.MigrationsHistoryTable("EFMigrationsHistory");
-                        option.EnableRetryOnFailure(maxRetryCount: 5,
-                            maxRetryDelay: TimeSpan.FromSeconds(30),
-                            errorNumbersToAdd: null);
                     });
 
                 optionsBuilder.EnableSensitiveDataLogging(!isDevelopment);
-
                 optionsBuilder.EnableDetailedErrors(isDevelopment);
 
                 var context = new UserSqlDbContext(optionsBuilder.Options);
@@ -44,6 +42,7 @@ namespace BAOZ.Api.Modules
               .AsImplementedInterfaces()
               .InstancePerLifetimeScope();
             #endregion
+            builder.RegisterType<PasswordService>().As<IPasswordService>().SingleInstance();
             builder.RegisterType<UserRepository>().As<IUserRepository>().InstancePerLifetimeScope();
             builder.RegisterType<UnitOfWork<IUserSqlDbContext>>().As<IUnitOfWork<IUserSqlDbContext>>().InstancePerLifetimeScope();
             builder.RegisterType<UserDatabaseInitializer>().As<IUserDatabaseInitializer>().InstancePerDependency();

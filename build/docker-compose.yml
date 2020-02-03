@@ -38,12 +38,27 @@ services:
     ports:
       - 27017:27017
       
-  readstore:
-    image: microsoft/mssql-server-linux:2017-latest
-    container_name: readstore
+ # readstore:
+ #  image: microsoft/mssql-server-linux:2017-latest
+ #   container_name: readstore
+  #  restart: always
+  #  ports:
+  #    - "1433:1433"
+ #   environment:
+ #     SA_PASSWORD: "A4eneXa7@:<_"
+ #     ACCEPT_EULA: "Y"
+
+  db:
+    image: postgres
     restart: always
     ports:
-      - "1433:1433"
+    - 5432:5432
     environment:
-      SA_PASSWORD: "A4eneXa7@:<_"
-      ACCEPT_EULA: "Y"
+      POSTGRES_DB: baoz
+      POSTGRES_USER: batu
+      POSTGRES_PASSWORD: example
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
