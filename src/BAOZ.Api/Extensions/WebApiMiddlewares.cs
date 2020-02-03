@@ -1,5 +1,8 @@
 ﻿using BAOZ.Api.Middlewares;
+using BAOZ.Api.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +19,8 @@ namespace BAOZ.Api.Extensions
 
         private static IApplicationBuilder UseRequestResponseLogging(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<RequestLoggingMiddleware>();
+            return builder
+        .UseMiddleware<ResponseWrapperMiddleware>();
         }
     }
 }

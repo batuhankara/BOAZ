@@ -50,6 +50,7 @@ namespace BAOZ.Api
             services.AddControllers(options =>
             {
                 options.Filters.Add(new ModelStateFilter());
+                options.Filters.Add(typeof(ExceptionFilter));
             })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
                .AddFluentValidation()
@@ -73,6 +74,7 @@ namespace BAOZ.Api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
             app.AddWebApiMiddlewares();
 
             this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
