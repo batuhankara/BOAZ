@@ -37,7 +37,6 @@ namespace BAOZ.Api
                             options.BeforeSend = @event =>
                         {
                             // Never report server names
-                            @event.ServerName = null;
                             return @event;
                         };
                         })
