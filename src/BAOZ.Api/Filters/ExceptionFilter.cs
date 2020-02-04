@@ -17,7 +17,7 @@ namespace BAOZ.Api.Filters
     {
         public void OnException(ExceptionContext context)
         {
-            var badRequest =(int) HttpStatusCode.BadRequest;
+            var badRequest = (int)HttpStatusCode.BadRequest;
             String message = String.Empty;
             var exceptionType = context.Exception.GetType();
             HttpResponse response = context.HttpContext.Response;
@@ -44,8 +44,26 @@ namespace BAOZ.Api.Filters
                 var json = JsonConvert.SerializeObject(err);
                 response.WriteAsync(json);
             }
+            else if (exceptionType == typeof(Exception))
+            {
 
+                context.ExceptionHandled = true;
+
+                response.StatusCode = badRequest;
+                response.ContentType = "application/json";
+                var convertedEx = ((Exception)context.Exception);
+                var err = new ApiResponse()
+                {
+                    IsError = true,
+                    Data = null,
+                    ApiException = new ApiException()
+                    {
+                        Exception = convertedEx
+                    }
+                };
+                var json = JsonConvert.SerializeObject(err);
+                response.WriteAsync(json);
+            }
         }
     }
 }
-

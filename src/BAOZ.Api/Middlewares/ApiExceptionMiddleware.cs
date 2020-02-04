@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using BAOZ.Api.Models;
 using System;
+using System.Text;
 
 namespace BAOZ.Api.Middlewares
 {
@@ -45,8 +46,10 @@ namespace BAOZ.Api.Middlewares
 
                 var modifiedJson = JsonConvert.DeserializeObject<ApiResponse>(json);
                 modifiedJson.ResponseTime = stopWatch.ElapsedMilliseconds.ToString();
-                context.Response.Body = originBody;
+                context.Response.Body = originalBody;
                 newBody.Seek(0, SeekOrigin.Begin);
+                context.Response.ContentLength = modifiedJson != null ? Encoding.UTF8.GetByteCount(JsonConvert.SerializeObject(modifiedJson)) : 0;
+
                 await context.Response.WriteAsync(JsonConvert.SerializeObject(modifiedJson));
                 newBody.Seek(0, SeekOrigin.Begin);
 

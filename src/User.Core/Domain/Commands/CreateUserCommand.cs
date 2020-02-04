@@ -12,7 +12,7 @@ namespace User.Core.Domain.Commands
     [Validator(typeof(CreateUserCommandValidator))]
     public class CreateUserCommand : BaseCommand<UserAggregate, BaozId, CommandResult>
     {
-        public CreateUserCommand(Guid userId, string firstName, string password, string lastName, string phoneNumber, string countryCode) : base(new BaozId(userId.ToString()))
+        public CreateUserCommand(Guid userId, string firstName, string password, string lastName, string phoneNumber, string countryCode, string email) : base(new BaozId(userId.ToString()))
         {
             UserId = userId;
             FirstName = firstName;
@@ -20,10 +20,12 @@ namespace User.Core.Domain.Commands
             LastName = lastName;
             PhoneNumber = phoneNumber;
             CountryCode = countryCode;
+            Email = email;
         }
         public Guid UserId { get; set; }
         public string FirstName { get; set; }
         public string Password { get; set; }
+        public string Email { get; set; }
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string CountryCode { get; set; }
@@ -33,6 +35,7 @@ namespace User.Core.Domain.Commands
         public CreateUserCommandValidator()
         {
 
+            RuleFor(user => user.Email).EmailAddress();
             RuleFor(user => user.FirstName).NotNull().NotEmpty();
             RuleFor(user => user.LastName).NotNull().NotEmpty();
             RuleFor(user => user.PhoneNumber).Must(PhoneNumberValidation.IsNumeric).Length(10).WithMessage("Invalid Phone Number");
