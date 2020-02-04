@@ -9,25 +9,28 @@ using Microsoft.Extensions.Logging;
 using Sentry;
 using Sentry.Protocol;
 using System.Collections.Generic;
+using BAOZ.Common.Helpers;
+using System.Threading.Tasks;
 
 namespace BAOZ.Api
 {
 
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args);
+            await host.RunConsoleAsync();
             host.Build().Run();
         }
 
         private static IHostBuilder CreateHostBuilder(string[] args)
         {
 
-
             var host = Host
                 .CreateDefaultBuilder(args)
                     .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+                    
                     .ConfigureWebHostDefaults(webBuilder =>
                     {
                         webBuilder.ConfigureServices(services => services.AddAutofac())
@@ -56,7 +59,7 @@ namespace BAOZ.Api
                         l.AddSentry(o =>
                         {
                             o.MinimumEventLevel = LogLevel.Debug;
-                            
+
                         });
                     });
             return host;

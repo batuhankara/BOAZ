@@ -11,7 +11,7 @@ namespace User.Core.Domain.Events
 
     public class UserCreatedEvent : BaseEvent<UserAggregate>
     {
-        public UserCreatedEvent(Guid userId, string firstName, string lastName, string phoneNumber, string countryCode, byte[] passwordHash, byte[] passwordSalt)
+        public UserCreatedEvent(Guid userId, string firstName, string lastName, string phoneNumber, string countryCode, byte[] passwordHash, byte[] passwordSalt, string email)
         {
             UserId = userId;
             FirstName = firstName;
@@ -20,6 +20,7 @@ namespace User.Core.Domain.Events
             CountryCode = countryCode;
             PasswordHash = passwordHash;
             PasswordSalt = passwordSalt;
+            Email = email;
         }
 
         public Guid UserId { get; set; }
@@ -27,6 +28,7 @@ namespace User.Core.Domain.Events
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
         public string CountryCode { get; set; }
+        public string Email { get; set; }
         public string FullPhoneNumber => CountryCode + PhoneNumber;
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }

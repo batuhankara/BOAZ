@@ -1,7 +1,10 @@
 ﻿using Baoz.Infrastructure.SqlServer.Contracts;
 using BAOZ.Common;
+using BAOZ.Common.Helpers;
+using BAOZ.Common.Models.Dtos;
 using EventFlow.Aggregates;
 using EventFlow.Subscribers;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,8 +19,8 @@ using User.Core.Domain.Repositories;
 namespace User.Application.Subscribers
 {
     public class UserEventSubscriber :
-        ISubscribeSynchronousTo<UserAggregate, BaozId, UserCreatedEvent>,
-        ISubscribeSynchronousTo<UserAggregate, BaozId, UserUpdatedEvent>
+       ISubscribeSynchronousTo<UserAggregate, BaozId, UserCreatedEvent>,
+       ISubscribeSynchronousTo<UserAggregate, BaozId, UserUpdatedEvent>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork<IUserSqlDbContext> _unitOfWork;

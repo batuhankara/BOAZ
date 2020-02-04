@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Baoz.Infrastructure.EventStore.Extensions;
 using Baoz.Infrastructure.Settings;
+using BAOZ.Common;
 using EventFlow;
 using EventFlow.AspNetCore.Extensions;
 using EventFlow.AspNetCore.Middlewares;
@@ -19,6 +20,9 @@ using MongoDB.Driver;
 using System;
 using System.Data.Common;
 using User.Application;
+using User.Application.Subscribers;
+using User.Core.Domain.Aggregates;
+using User.Core.Domain.Events;
 
 namespace BAOZ.Api.Configurations
 {
@@ -31,11 +35,10 @@ namespace BAOZ.Api.Configurations
             var eventStoreSettings = configuration.GetEventStoreSettings();
 
             var rabbitMQConfiguration = RabbitMqConfiguration.With(new Uri($"amqp://{rabbitMQSettings.UserName}:{rabbitMQSettings.Password}@{rabbitMQSettings.Host}:{rabbitMQSettings.Port}"), rabbitMQSettings.Persistent.Value, 5, rabbitMQSettings.ExchangeName);
-
             EventFlowOptions.New
 
                             .UseAutofacContainerBuilder(containerBuilder) // Must be the first line!
-                            .Configure(c => c.ThrowSubscriberExceptions = true)
+                            .Configure(c => { c.ThrowSubscriberExceptions = true; c.IsAsynchronousSubscribersEnabled = true; })
                             .RegisterModule<UserModule>()
                             .AddAspNetCore(options =>
                             {
