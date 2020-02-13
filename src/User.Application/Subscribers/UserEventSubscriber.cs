@@ -2,6 +2,7 @@
 using BAOZ.Common;
 using BAOZ.Common.Helpers;
 using BAOZ.Common.Models.Dtos;
+using EventFlow;
 using EventFlow.Aggregates;
 using EventFlow.Subscribers;
 using Microsoft.Extensions.Hosting;
@@ -15,20 +16,26 @@ using User.Core.Domain.Database;
 using User.Core.Domain.Entities;
 using User.Core.Domain.Events;
 using User.Core.Domain.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using User.Core.Domain.Commands;
 
 namespace User.Application.Subscribers
 {
     public class UserEventSubscriber :
        ISubscribeSynchronousTo<UserAggregate, BaozId, UserCreatedEvent>,
-       ISubscribeSynchronousTo<UserAggregate, BaozId, UserUpdatedEvent>
+       ISubscribeSynchronousTo<UserAggregate, BaozId, UserUpdatedEvent>,
+       ISubscribeSynchronousTo<UserAggregate, BaozId, UserEmailTokenGenareted>,
+       ISubscribeSynchronousTo<UserAggregate, BaozId, UserEmailSent>
     {
         private readonly IUserRepository _userRepository;
         private readonly IUnitOfWork<IUserSqlDbContext> _unitOfWork;
 
-        public UserEventSubscriber(IUserRepository userRepository, IUnitOfWork<IUserSqlDbContext> unitOfWork)
+        private readonly ICommandBus CommandBus;
+        public UserEventSubscriber(IUserRepository userRepository, IUnitOfWork<IUserSqlDbContext> unitOfWork, ICommandBus commandBus)
         {
             _userRepository = userRepository;
             _unitOfWork = unitOfWork;
+            CommandBus = commandBus;
         }
 
         public async Task HandleAsync(IDomainEvent<UserAggregate, BaozId, UserCreatedEvent> domainEvent, CancellationToken cancellationToken)
@@ -56,6 +63,25 @@ namespace User.Application.Subscribers
 
             _unitOfWork.ChangeAutoDetectChangesStatus(true);
             var res = await _unitOfWork.CommitAsync();
+        }
+
+        public async Task HandleAsync(IDomainEvent<UserAggregate, BaozId, UserEmailTokenGenareted> domainEvent, CancellationToken cancellationToken)
+        {
+            var entity = await _userRepository.GetAsync(x => x.Id == domainEvent.AggregateEvent.Id);
+            if (entity != null)
+            {
+                entity.Code = domainEvent.AggregateEvent.Token;
+                entity.ExpireDate = domainEvent.AggregateEvent.ExpireDate;
+            }
+            await _unitOfWork.CommitAsync();
+
+        }
+
+        public async Task HandleAsync(IDomainEvent<UserAggregate, BaozId, UserEmailSent> domainEvent, CancellationToken cancellationToken)
+        {
+            var @event = domainEvent.AggregateEvent;
+            var dto = new EmailTemplateDto(@event.From, @event.To, @event.PlainText, @event.HtmlBody, @event.Subject);
+             EmailService.Execute(dto);
         }
     }
 }

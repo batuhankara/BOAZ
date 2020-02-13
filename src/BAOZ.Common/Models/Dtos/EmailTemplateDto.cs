@@ -6,7 +6,16 @@ namespace BAOZ.Common.Models.Dtos
 {
     public class EmailTemplateDto : IDto
     {
-        public EmailAndName From { get; set; } = new EmailAndName("batuhan@batuhan.com", "batuhan Kara");
+        public EmailTemplateDto(EmailAndName from, EmailAndName to, string plainText, string htmlBody, string subject)
+        {
+            From = from;
+            To = to;
+            PlainText = plainText;
+            HtmlBody = htmlBody;
+            Subject = subject;
+        }
+
+        public EmailAndName From { get; set; }
         public EmailAndName To { get; set; }
         public string PlainText { get; set; }
         public string HtmlBody { get; set; }
