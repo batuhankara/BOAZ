@@ -13,8 +13,11 @@ namespace User.Core.Domain.Entities
         public string PhoneNumber { get; set; }
         public string CountryCode { get; set; }
         public string FullPhoneNumber { get; set; }
+        public string Code { get; set; }
+        public DateTime ExpireDate { get; set; }
 
         public byte[] PasswordHash { get; set; }
         public byte[] PasswordSalt { get; set; }
     }
+
 }

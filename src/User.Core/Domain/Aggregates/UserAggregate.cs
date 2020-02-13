@@ -1,5 +1,6 @@
 ﻿using BAOZ.Common;
 using BAOZ.Common.Helpers;
+using BAOZ.Common.Models.Dtos;
 using EventFlow.Aggregates.ExecutionResults;
 using EventFlow.ValueObjects;
 using System;
@@ -18,6 +19,7 @@ namespace User.Core.Domain.Aggregates
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string PhoneNumber { get; set; }
+        public string EmailToken { get; set; }
         public string Email { get; set; }
         public string CountryCode { get; set; }
         public string FullPhoneNumber => CountryCode + PhoneNumber;
@@ -43,7 +45,16 @@ namespace User.Core.Domain.Aggregates
                 );
 
             Emit(@event);
+            var token = new Random().Next(100000, 999999);
 
+            var @GenerateTokenEvent = new UserEmailTokenGenareted(command.UserId, token.ToString(), DateTime.UtcNow.AddDays(1));
+            Emit(GenerateTokenEvent);
+            var @SentMailEvent = new UserEmailSent(
+                new EmailAndName(this.Email, $"{this.Name} {this.LastName}"),
+                $"Generated Token {this.EmailToken}",
+                $"Generated Token {this.EmailToken}",
+                "Verify Your Account");
+            Emit(SentMailEvent);
             return ExecutionResult.Success();
         }
         public IExecutionResult Create(UpdateUserCommand command)
@@ -58,7 +69,6 @@ namespace User.Core.Domain.Aggregates
 
             return ExecutionResult.Success();
         }
-
         #endregion
         #region Apply methods
         public void Apply(UserCreatedEvent domainEvent)
@@ -71,9 +81,17 @@ namespace User.Core.Domain.Aggregates
             this.Email = domainEvent.Email;
             this.PasswordSalt = domainEvent.PasswordSalt;
         }
+        public void Apply(UserEmailTokenGenareted domainEvent)
+        {
+            this.EmailToken = domainEvent.Token;
+        }
         public void Apply(UserUpdatedEvent domainEvent)
         {
             this.FirstName = domainEvent.FirstName;
+        }
+        public void Apply(UserEmailSent domainEvent)
+        {
+
         }
         #endregion
     }

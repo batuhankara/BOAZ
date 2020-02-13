@@ -10,6 +10,8 @@ using BAOZ.Api.Sentry;
 using BAOZ.Api.ValidationModules;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -62,6 +64,8 @@ namespace BAOZ.Api
             services.AddWebApiValidations();
             services.AddOptions();
             services.AddLogging();
+            services.AddHangfire(config =>
+                config.UsePostgreSqlStorage(Configuration.GetValue<string>("HangfireSqlConnection:ConnectionString"))) ;
 
         }
         public void ConfigureContainer(ContainerBuilder builder)
@@ -76,6 +80,8 @@ namespace BAOZ.Api
         {
 
             app.AddWebApiMiddlewares();
+            app.UseHangfireServer();
+            app.UseHangfireDashboard();
 
             this.AutofacContainer = app.ApplicationServices.GetAutofacRoot();
 
@@ -99,8 +105,7 @@ namespace BAOZ.Api
             app.UseRouting();
 
             app.UseAuthorization();
-
-            app.UseSwagger()
+             app.UseSwagger()
                 .UseEventSourcing();
             app.UseEndpoints(endpoints =>
             {
